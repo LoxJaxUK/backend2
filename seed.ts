@@ -19,46 +19,50 @@ const SERVICE_TASKS = [
 ];
 
 export const seedDatabase = async () => {
-  // Clear existing
-  await User.deleteMany({});
-  await Task.deleteMany({});
-  await Log.deleteMany({});
-  await Rule.deleteMany({});
-  await Video.deleteMany({});
+  try {
+    // Clear existing
+    await User.deleteMany({});
+    await Task.deleteMany({});
+    await Log.deleteMany({});
+    await Rule.deleteMany({});
+    await Video.deleteMany({});
 
-  // Users
-  const passwordHash = await bcrypt.hash('123456', 10);
-  
-  await User.insertMany([
-    { name: "Admin Tổng", email: "admin@phobbq.com", passwordHash, role: "admin", jobPosition: "Chủ Quán" },
-    { name: "Quản Lý Cửa Hàng", email: "manager@phobbq.com", passwordHash, role: "manager", jobPosition: "Quản Lý" },
-    { name: "Đầu Bếp Hùng", email: "kitchen@phobbq.com", passwordHash, role: "kitchen", jobPosition: "Bếp Trưởng" },
-    { name: "Phục Vụ Mai", email: "service@phobbq.com", passwordHash, role: "service", jobPosition: "Tổ trưởng bàn" },
-  ]);
+    // Users
+    const passwordHash = await bcrypt.hash('123456', 10);
+    
+    await User.insertMany([
+      { name: "Admin Tổng", email: "admin@phobbq.com", passwordHash, role: "admin", jobPosition: "Chủ Quán" },
+      { name: "Quản Lý Cửa Hàng", email: "manager@phobbq.com", passwordHash, role: "manager", jobPosition: "Quản Lý" },
+      { name: "Đầu Bếp Hùng", email: "kitchen@phobbq.com", passwordHash, role: "kitchen", jobPosition: "Bếp Trưởng" },
+      { name: "Phục Vụ Mai", email: "service@phobbq.com", passwordHash, role: "service", jobPosition: "Tổ trưởng bàn" },
+    ]);
 
-  console.log("Users seeded (Admin, Manager, Kitchen, Service)");
+    console.log("Users seeded (Admin, Manager, Kitchen, Service) - seed.ts:40");
 
-  // Tasks
-  const allTasks = [];
-  KITCHEN_TASKS.forEach(t => allTasks.push({ ...t, role: 'kitchen' }));
-  SERVICE_TASKS.forEach(t => allTasks.push({ ...t, role: 'service' }));
+    // Tasks - FIX: Define type explicitly as any[] to avoid TS7034
+    const allTasks: any[] = [];
+    KITCHEN_TASKS.forEach(t => allTasks.push({ ...t, role: 'kitchen', status: 'pending', isCompleted: false }));
+    SERVICE_TASKS.forEach(t => allTasks.push({ ...t, role: 'service', status: 'pending', isCompleted: false }));
 
-  await Task.insertMany(allTasks);
-  console.log("Tasks seeded");
+    await Task.insertMany(allTasks);
+    console.log("Tasks seeded - seed.ts:48");
 
-  // Rules
-  await Rule.create({
-    title: "NỘI QUY CHUNG PHOBBQ",
-    content: "1. Đi làm đúng giờ.\n2. Trang phục chỉnh tề, sạch sẽ.\n3. Không sử dụng điện thoại trong giờ làm việc (trừ việc công).\n4. Luôn mỉm cười với khách hàng.\n5. Báo cáo ngay cho quản lý nếu có sự cố.",
-    updatedBy: "Admin Tổng"
-  });
-  console.log("Rules seeded");
+    // Rules
+    await Rule.create({
+      title: "NỘI QUY CHUNG PHOBBQ",
+      content: "1. Đi làm đúng giờ.\n2. Trang phục chỉnh tề, sạch sẽ.\n3. Không sử dụng điện thoại trong giờ làm việc (trừ việc công).\n4. Luôn mỉm cười với khách hàng.\n5. Báo cáo ngay cho quản lý nếu có sự cố.",
+      updatedBy: "Admin Tổng"
+    });
+    console.log("Rules seeded - seed.ts:56");
 
-  // Videos
-  await Video.insertMany([
-    { title: "Quy trình rửa tay chuẩn", youtubeUrl: "https://www.youtube.com/watch?v=3PMVJQUCm4Q", order: 1 },
-    { title: "Kỹ năng phục vụ bàn chuyên nghiệp", youtubeUrl: "https://www.youtube.com/watch?v=HG8b71jGkEk", order: 2 },
-    { title: "Cách ướp thịt nướng ngon", youtubeUrl: "https://www.youtube.com/watch?v=kR2tJd1J5E8", order: 3 }
-  ]);
-  console.log("Videos seeded");
+    // Videos
+    await Video.insertMany([
+      { title: "Quy trình rửa tay chuẩn", youtubeUrl: "https://www.youtube.com/watch?v=3PMVJQUCm4Q", order: 1 },
+      { title: "Kỹ năng phục vụ bàn chuyên nghiệp", youtubeUrl: "https://www.youtube.com/watch?v=HG8b71jGkEk", order: 2 },
+      { title: "Cách ướp thịt nướng ngon", youtubeUrl: "https://www.youtube.com/watch?v=kR2tJd1J5E8", order: 3 }
+    ]);
+    console.log("Videos seeded - seed.ts:64");
+  } catch (error) {
+    console.error("Seed Error: - seed.ts:66", error);
+  }
 };
