@@ -39,7 +39,7 @@ export const seedDatabase = async () => {
 
     console.log("Users seeded (Admin, Manager, Kitchen, Service) - seed.ts:40");
 
-    // Tasks - FIX: Define type explicitly as any[] to avoid TS7034
+    // Tasks - FIX: Explicitly type array as any[] to prevent TS7034 error
     const allTasks: any[] = [];
     KITCHEN_TASKS.forEach(t => allTasks.push({ ...t, role: 'kitchen', status: 'pending', isCompleted: false }));
     SERVICE_TASKS.forEach(t => allTasks.push({ ...t, role: 'service', status: 'pending', isCompleted: false }));
