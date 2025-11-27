@@ -22,15 +22,16 @@ const connectDB = async () => {
   try {
     const uri = process.env.MONGODB_URI || 'mongodb+srv://admin:admin@phobbq.0wptjws.mongodb.net/?appName=phobbq';
     const conn = await mongoose.connect(uri);
-    console.log(`MongoDB Connected: ${conn.connection.host}`);
+    console.log(`MongoDB Connected: ${conn.connection.host} - server.ts:25`);
     
     // Auto-seed if empty
     const userCount = await User.countDocuments();
     if (userCount === 0) {
+      console.log('Database empty, seeding initial data... - server.ts:30');
       await seedDatabase();
     }
   } catch (error) {
-    console.error('MongoDB Connection Error:', error);
+    console.error('MongoDB Connection Error: - server.ts:34', error);
   }
 };
 
@@ -53,6 +54,11 @@ const requireAdmin = (req: any, res: any, next: any) => {
 };
 
 // --- Routes ---
+
+// Health Check
+app.get('/', (req, res) => {
+    res.send('PHOBBQ Backend is running!');
+});
 
 // AUTH
 app.post('/api/auth/login', async (req, res) => {
@@ -258,5 +264,5 @@ app.delete('/api/videos/:id', authenticateToken, requireAdmin, async (req, res) 
 });
 
 connectDB().then(() => {
-  app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+  app.listen(PORT, () => console.log(`PHOBBQ Backend running on port ${PORT} - server.ts:267`));
 });
